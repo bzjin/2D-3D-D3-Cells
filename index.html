@@ -4,7 +4,16 @@
 		<title>Body</title>
 		<meta charset="utf-8">
 		<style type="text/css">
-			body { background-color: #000000; margin: 0px; overflow: hidden; }
+			@font-face {
+			  font-family: 'Effra';
+			  src: url('fonts/Effra_Std_Rg.ttf');
+			}
+
+			@font-face {
+			  font-family: 'Effra Heavy';
+			  src: url('fonts/Effra_Std_He.ttf');
+			}
+			body { background-color: #000000; margin: 0px; overflow: hidden; font-family: "Effra";}
 			a { color:#0078ff; }
 			.slice {
 			    border-radius: 100px;
@@ -56,8 +65,8 @@
 		<div id="svgL"></div>
 
 		<div id="container"></div>
-		<!-- D3 Library --> <script src="lib/d3.v4.min.js"></script>
-    <!-- D3-Tip --> <script src="lib/d3-tip.js"></script>
+		<!-- D3 Library --> <script src="js/d3.v4.min.js"></script>
+    <!-- D3-Tip --> <script src="js/d3-tip.js"></script>
 		<script type="text/javascript" src="js/three.min.js"></script>
 		<script type="text/javascript" src="js/Detector.js"></script>
 		<script type="text/javascript" src="js/stats.min.js"></script>
@@ -85,6 +94,14 @@
 					var imgurl = "";
 					if (i < 10){ imgurl = 'slices/test_000' + i + '.jpg'; }
 					else { imgurl = 'slices/test_00' + i + '.jpg';}
+
+					svg.append('rect')
+						.attr('class', 'slice')
+                        .attr('id', 'slice' + i)
+                        .attr('x', (i- (Math.floor(i/10)*10)) * 65)
+                        .attr('y', Math.floor(i/10) * 75)
+                        .attr('width', 60)
+                        .attr('height', 60)
 
 					svg.append('image')
                         .attr('class', 'slice')
@@ -126,7 +143,7 @@
 
 				var slider = svgL.append("g")
 				    .attr("class", "slider")
-				    .attr("transform", "translate(0, 420)")
+				    .attr("transform", "translate(0, 650)")
 
 				slider.append("line")
 				    .attr("class", "track")
@@ -154,14 +171,9 @@
 				    .attr("class", "handle")
 				    .attr("r", 9);
 
-				slider.transition() // Gratuitous intro!
-				    .duration(750)
-				    .tween("hue", function() {
-				      var i = d3.interpolate(0, 70);
-				      return function(t) { hue(i(t)); };
-				    });
-
 				function hue(h) {
+				  svgL.selectAll("text").remove();
+
 				  handle.attr("cx", x(h));
 				  var imgurlL = "", imgurlT = "", imgurlB = "";
 				  var base = Math.floor(xInt(h));
@@ -174,7 +186,21 @@
 				  else if (base + 4 > 59) { imgurlL = 'slices/test_00' + base + '.jpg'; }
 				  else { imgurlB = 'slices/test_00' + (base+4) + '.jpg';}
 
-			
+				  svg.selectAll(".slice")
+				  	.style("stroke-width", 0)
+
+				  d3.selectAll("#slice"+base)
+				  	.style("stroke", "orange")
+				  	.style("stroke-width", 5)
+
+				  d3.selectAll("#slice"+(base+2))
+				  	.style("stroke", "lightgreen")
+				  	.style("stroke-width", 5)
+
+				  d3.selectAll("#slice"+(base+4))
+				  	.style("stroke", "steelblue")
+				  	.style("stroke-width", 5)
+					
 				  svgL.append("image")
 				  		.attr('class', 'slice')
                         .attr('x', 0)
@@ -187,7 +213,7 @@
                   svgL.append("image")
 				  		.attr('class', 'slice')
                         .attr('x', 0)
-                        .attr('y', 440)
+                        .attr('y', 420)
                         .style("opacity", .05)
                         .attr('width', 200)
                         .attr('height', 200)
@@ -201,6 +227,25 @@
                         .attr('width', 200)
                         .attr('height', 200)
                         .attr('href', imgurlL);
+
+                  svgL.append("text")
+                  	.attr("x", 230)
+                  	.attr("y", 100)
+                  	.style("fill", "orange")
+                  	.text("Slice " + base)
+
+                  svgL.append("text")
+                  	.attr("x", 230)
+                  	.attr("y", 300)
+                  	.style("fill", "lightgreen")
+                  	.text("Slice " + (base+2))
+
+                  svgL.append("text")
+                  	.attr("x", 230)
+                  	.attr("y", 500)
+                  	.style("fill", "steelblue")
+                  	.text("Slice " + (base+4))
+
 				}
 
 			}
