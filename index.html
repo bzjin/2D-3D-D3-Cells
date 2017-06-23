@@ -1,0 +1,211 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>Body</title>
+		<meta charset="utf-8">
+		<style type="text/css">
+			body { background-color: #000000; margin: 0px; overflow: hidden; }
+			a { color:#0078ff; }
+			.slice {
+			    border-radius: 100px;
+			}
+			div {
+				padding: 20px;
+				margin: 20px;
+				float: left;
+			}
+
+			.ticks {
+			  font: 10px sans-serif;
+			}
+
+			.track,
+			.track-inset,
+			.track-overlay {
+			  stroke-linecap: round;
+			}
+
+			.track {
+			  stroke: white;
+			  stroke-opacity: 0.3;
+			  stroke-width: 10px;
+			}
+
+			.track-inset {
+			  stroke: #ddd;
+			  stroke-width: 8px;
+			}
+
+			.track-overlay {
+			  pointer-events: stroke;
+			  stroke-width: 50px;
+			  stroke: transparent;
+			  cursor: crosshair;
+			}
+
+			.handle {
+			  fill: #fff;
+			  stroke: white;
+			  stroke-opacity: 0.5;
+			  stroke-width: 1.25px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="svg"></div>
+		<div id="svgL"></div>
+
+		<div id="container"></div>
+		<script src="http://d3js.org/d3.v4.min.js"></script>
+		<script type="text/javascript" src="js/three.min.js"></script>
+		<script type="text/javascript" src="js/Detector.js"></script>
+		<script type="text/javascript" src="js/stats.min.js"></script>
+    	<script type="text/javascript" src="https://cdn.rawgit.com/mrdoob/three.js/r69/examples/js/loaders/ColladaLoader.js"></script>
+
+		<script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
+
+		<script type="text/javascript">
+
+			init();
+
+			function init() {
+
+        		var svg = d3.select('#svg').append("svg")
+        				.attr("width", 700)
+     					.attr("height", 500)
+     					.style("overflow", "visible");
+
+     			var svgL = d3.select('#svgL').append("svg")
+        				.attr("width", 300)
+     					.attr("height", 700)
+     					.style("overflow", "visible");
+
+				for ( var i = 0; i <= 59; i++ ) {
+					var imgurl = "";
+					if (i < 10){ imgurl = 'slices/test_000' + i + '.jpg'; }
+					else { imgurl = 'slices/test_00' + i + '.jpg';}
+
+					svg.append('image')
+                        .attr('class', 'slice')
+                        .attr('id', 'slice' + i)
+                        .attr('x', (i- (Math.floor(i/10)*10)) * 65)
+                        .attr('y', Math.floor(i/10) * 75)
+                        .attr('width', 60)
+                        .attr('height', 60)
+                        .attr('href', imgurl);
+                    
+                    svg.append('text')
+                        .attr('class', 'numbers')
+                        .attr('x', (i- (Math.floor(i/10)*10)) * 65)
+                        .attr('y', Math.floor(i/10) * 75 )
+                        .attr("font-size", 10)
+                        .attr("fill", "white")
+                        .text(i)
+				}
+
+				svgL.append('image')
+                        .attr('class', 'slice')
+                        .attr('x', 0)
+                        .attr('y', 210)
+                        .style("opacity", .05)
+                        .attr('width', 200)
+                        .attr('height', 200)
+                        .attr('href', 'slices/test_0059.jpg');
+
+				//Slider
+				var x = d3.scaleLinear()
+				    .domain([0, 59])
+				    .range([10, 190])
+				    .clamp(true);
+
+				var xInt = d3.scaleLinear()
+				    .domain([0, 59])
+				    .range([0, 59])
+				    .clamp(true);
+
+				var slider = svgL.append("g")
+				    .attr("class", "slider")
+				    .attr("transform", "translate(0, 420)")
+
+				slider.append("line")
+				    .attr("class", "track")
+				    .attr("x1", x.range()[0])
+				    .attr("x2", x.range()[1])
+				  .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+				    .attr("class", "track-inset")
+				  .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+				    .attr("class", "track-overlay")
+				    .call(d3.drag()
+				        .on("start.interrupt", function() { slider.interrupt(); })
+				        .on("start drag", function() { hue(x.invert(d3.event.x)); }));
+
+				slider.insert("g", ".track-overlay")
+				    .attr("class", "ticks")
+				    .attr("transform", "translate(0," + 18 + ")")
+				  .selectAll("text")
+				  .data(x.ticks(10))
+				  .enter().append("text")
+				    .attr("x", x)
+				    .attr("text-anchor", "middle")
+				    .text(function(d) { return d});
+
+				var handle = slider.insert("circle", ".track-overlay")
+				    .attr("class", "handle")
+				    .attr("r", 9);
+
+				slider.transition() // Gratuitous intro!
+				    .duration(750)
+				    .tween("hue", function() {
+				      var i = d3.interpolate(0, 70);
+				      return function(t) { hue(i(t)); };
+				    });
+
+				function hue(h) {
+				  handle.attr("cx", x(h));
+				  var imgurlL = "", imgurlT = "", imgurlB = "";
+				  var base = Math.floor(xInt(h));
+				  if (base < 10) { imgurlT = 'slices/test_000' + base + '.jpg';} 
+				  else { imgurlT = 'slices/test_00' + base + '.jpg';}
+				  if (base + 2 < 10) { 	imgurlL = 'slices/test_000' + (base+2) + '.jpg';}
+				  else if (base + 2 > 59) { imgurlL = 'slices/test_00' + base + '.jpg'; }
+				  else { imgurlL = 'slices/test_00' + (base+2) + '.jpg';}
+				  if (base + 4 < 10) { 	imgurlB = 'slices/test_000' + (base+4) + '.jpg';}
+				  else if (base + 4 > 59) { imgurlL = 'slices/test_00' + base + '.jpg'; }
+				  else { imgurlB = 'slices/test_00' + (base+4) + '.jpg';}
+
+			
+				  svgL.append("image")
+				  		.attr('class', 'slice')
+                        .attr('x', 0)
+                        .attr('y', 0)
+                        .style("opacity", .05)
+                        .attr('width', 200)
+                        .attr('height', 200)
+                        .attr('href', imgurlT);
+
+                  svgL.append("image")
+				  		.attr('class', 'slice')
+                        .attr('x', 0)
+                        .attr('y', 440)
+                        .style("opacity", .05)
+                        .attr('width', 200)
+                        .attr('height', 200)
+                        .attr('href', imgurlB);
+                  //slider     
+				  svgL.append("image")
+				  		.attr('class', 'slice')
+                        .attr('x', 0)
+                        .attr('y', 210)
+                        .style("opacity", .05)
+                        .attr('width', 200)
+                        .attr('height', 200)
+                        .attr('href', imgurlL);
+				}
+
+			}
+
+			
+
+		</script>
+	</body>
+</html>
