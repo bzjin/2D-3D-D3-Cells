@@ -23,7 +23,8 @@
 				margin: 20px;
 				float: left;
 			}
-
+			text { font-size: 11px; }
+			}
 			.ticks {
 			  font: 10px sans-serif;
 			}
@@ -63,10 +64,11 @@
 	<body>
 		<div id="svg"></div>
 		<div id="svgL"></div>
+		<div id="canvas"></div>
 
 		<div id="container"></div>
 		<!-- D3 Library --> <script src="js/d3.v4.min.js"></script>
-    <!-- D3-Tip --> <script src="js/d3-tip.js"></script>
+    	<!-- D3-Tip --> <script src="js/d3-tip.js"></script>
 		<script type="text/javascript" src="js/three.min.js"></script>
 		<script type="text/javascript" src="js/Detector.js"></script>
 		<script type="text/javascript" src="js/stats.min.js"></script>
@@ -80,55 +82,129 @@
 
 			function init() {
 
-        		var svg = d3.select('#svg').append("svg")
-        				.attr("width", 700)
-     					.attr("height", 500)
-     					.style("overflow", "visible");
+			    var canvas = d3.select('#svg').append("canvas")
+				.attr("id", "canvas")
+				.attr("width", 400)
+				.attr("height", 700);
+				
+			    var context = canvas.node().getContext("2d");
+
+        		/*var svg = d3.select('#svg').append("svg")
+        				.attr("width", 400)
+     					.attr("height", 700)
+     					.style("overflow", "visible");*/
 
      			var svgL = d3.select('#svgL').append("svg")
         				.attr("width", 300)
      					.attr("height", 700)
      					.style("overflow", "visible");
 
+
+     			var svgR = d3.select('#svgR').append("svg")
+        				.attr("width", 300)
+     					.attr("height", 700)
+     					.style("overflow", "visible");
+
 				for ( var i = 0; i <= 59; i++ ) {
 					var imgurl = "";
-					if (i < 10){ imgurl = 'slices/test_000' + i + '.jpg'; }
-					else { imgurl = 'slices/test_00' + i + '.jpg';}
+					var preurl = "";
+					if (i < 10){ 
+						imgurl = 'slices/raw_000' + i + '.jpg'; 
+						preurl = 'slices/pre_000' + i + '.jpg';}
+					else { 
+						imgurl = 'slices/raw_00' + i + '.jpg';
+						preurl = 'slices/pre_00' + i + '.jpg';}
 
 					svg.append('rect')
 						.attr('class', 'slice')
                         .attr('id', 'slice' + i)
-                        .attr('x', (i- (Math.floor(i/10)*10)) * 65)
-                        .attr('y', Math.floor(i/10) * 75)
+                        .attr('x', (i- (Math.floor(i/6)*6)) * 65)
+                        .attr('y', Math.floor(i/6) * 75)
                         .attr('width', 60)
                         .attr('height', 60)
 
 					svg.append('image')
                         .attr('class', 'slice')
-                        .attr('id', 'slice' + i)
-                        .attr('x', (i- (Math.floor(i/10)*10)) * 65)
-                        .attr('y', Math.floor(i/10) * 75)
+                        .attr('id', 'preslice' + i)
+                        .attr('x', (i- (Math.floor(i/6)*6)) * 65)
+                        .attr('y', Math.floor(i/6) * 75)
                         .attr('width', 60)
                         .attr('height', 60)
-                        .attr('href', imgurl);
+                        .attr('href', preurl)
+
+					svg.append('image')
+                        .attr('class', 'slice')
+                        .attr('id', 'slice' + i)
+                        .attr('x', (i- (Math.floor(i/6)*6)) * 65)
+                        .attr('y', Math.floor(i/6) * 75)
+                        .attr('width', 60)
+                        .attr('height', 60)
+                        .attr('href', imgurl)
+                        .on("mouseover", function(){
+                        	d3.selectAll("#" + this.getAttribute("id"))
+                        		.attr("opacity", .2)
+                        })
+                        .on("mouseleave", function(){
+                        	d3.selectAll("#" + this.getAttribute("id"))
+                        		.attr("opacity", 1)
+                        });
                     
                     svg.append('text')
                         .attr('class', 'numbers')
-                        .attr('x', (i- (Math.floor(i/10)*10)) * 65)
-                        .attr('y', Math.floor(i/10) * 75 )
+                        .attr('x', (i- (Math.floor(i/6)*6)) * 65)
+                        .attr('y', Math.floor(i/6) * 75 )
                         .attr("font-size", 10)
                         .attr("fill", "white")
                         .text(i)
+
+                     $(function() {
+					    $.ajax({
+					        url: "http://mkweb.bcgsc.ca/color-summarizer/?url=IMAGE_URL&precision=low&num_clusters=0&json=1",
+					        type: 'GET',
+							xhrFields: {
+							    withCredentials: true
+							  },        
+					        crossDomain: true,
+					        dataType: 'json',
+					        //headers: '[Does something go here?]',
+					        success: function(data, status, xhr)
+					        {
+					        	console.log(data)
+					        },
+					        error: function(xhr, status, error)
+					        {
+					            console.log("Error: " + status + " " + error);
+					        }
+					    });
+					}); 
 				}
 
 				svgL.append('image')
                         .attr('class', 'slice')
                         .attr('x', 0)
-                        .attr('y', 210)
-                        .style("opacity", .05)
+                        .attr('y', 0)
+                        .style("opacity", 1)
                         .attr('width', 200)
                         .attr('height', 200)
-                        .attr('href', 'slices/test_0059.jpg');
+                        .attr('href', 'slices/raw_0001.jpg');
+
+				svgL.append('image')
+                        .attr('class', 'slice')
+                        .attr('x', 0)
+                        .attr('y', 240)
+                        .style("opacity", 1)
+                        .attr('width', 200)
+                        .attr('height', 200)
+                        .attr('href', 'slices/raw_0001.jpg');
+
+				svgL.append('image')
+                        .attr('class', 'slice')
+                        .attr('x', 0)
+                        .attr('y', 480)
+                        .style("opacity", 1)
+                        .attr('width', 200)
+                        .attr('height', 200)
+                        .attr('href', 'slices/raw_0001.jpg');
 
 				//Slider
 				var x = d3.scaleLinear()
@@ -143,7 +219,7 @@
 
 				var slider = svgL.append("g")
 				    .attr("class", "slider")
-				    .attr("transform", "translate(0, 650)")
+				    .attr("transform", "translate(0, 720)")
 
 				slider.append("line")
 				    .attr("class", "track")
@@ -176,18 +252,39 @@
 
 				  handle.attr("cx", x(h));
 				  var imgurlL = "", imgurlT = "", imgurlB = "";
+				  var preurlL = "", preurlT = "", preurlB = "";
+				  
 				  var base = Math.floor(xInt(h));
-				  if (base < 10) { imgurlT = 'slices/test_000' + base + '.jpg';} 
-				  else { imgurlT = 'slices/test_00' + base + '.jpg';}
-				  if (base + 2 < 10) { 	imgurlL = 'slices/test_000' + (base+2) + '.jpg';}
-				  else if (base + 2 > 59) { imgurlL = 'slices/test_00' + base + '.jpg'; }
-				  else { imgurlL = 'slices/test_00' + (base+2) + '.jpg';}
-				  if (base + 4 < 10) { 	imgurlB = 'slices/test_000' + (base+4) + '.jpg';}
-				  else if (base + 4 > 59) { imgurlL = 'slices/test_00' + base + '.jpg'; }
-				  else { imgurlB = 'slices/test_00' + (base+4) + '.jpg';}
+				  
+				  if (base < 10) { 
+				  	imgurlT = 'slices/raw_000' + base + '.jpg';
+				  	preurlT = 'slices/pre_000' + base + '.jpg';} 
+				  else { 
+				  	imgurlT = 'slices/raw_00' + base + '.jpg';
+				  	preurlT = 'slices/pre_00' + base + '.jpg';}
+				  if (base + 2 < 10) { 	
+				  	imgurlL = 'slices/raw_000' + (base+2) + '.jpg';
+				  	preurlL = 'slices/pre_000' + (base+2) + '.jpg';}
+				  else if (base + 2 > 59) { 
+				  	imgurlL = 'slices/raw_00' + base + '.jpg'; 
+				  	preurlL = 'slices/pre_00' + base + '.jpg'; }
+				  else { 
+				  	imgurlL = 'slices/raw_00' + (base+2) + '.jpg';
+				    preurlL = 'slices/pre_00' + (base+2) + '.jpg';}
+				  if (base + 4 < 10) { 	
+				  	imgurlB = 'slices/raw_000' + (base+4) + '.jpg';
+				  	preurlB = 'slices/pre_000' + (base+4) + '.jpg';}
+				  else if (base + 4 > 59) { 
+				  	imgurlL = 'slices/raw_00' + base + '.jpg'; 
+				    preurlL = 'slices/pre_00' + base + '.jpg'; }
+				  else { 
+				  	imgurlB = 'slices/raw_00' + (base+4) + '.jpg';
+				  	preurlB = 'slices/pre_00' + (base+4) + '.jpg';}
 
 				  svg.selectAll(".slice")
 				  	.style("stroke-width", 0)
+
+				  svg.selectAll(".sliceC").remove();
 
 				  d3.selectAll("#slice"+base)
 				  	.style("stroke", "orange")
@@ -201,48 +298,136 @@
 				  	.style("stroke", "steelblue")
 				  	.style("stroke-width", 5)
 					
-				  svgL.append("image")
-				  		.attr('class', 'slice')
+
+				 svgL.append("image")
+				  		.attr('class', 'sliceP')
                         .attr('x', 0)
                         .attr('y', 0)
-                        .style("opacity", .05)
+                        .style("opacity", 1)
                         .attr('width', 200)
                         .attr('height', 200)
-                        .attr('href', imgurlT);
+                        .attr('href', preurlT)
+   
+                  svgL.append("image")
+				  		.attr('class', 'sliceP')
+                        .attr('x', 0)
+                        .attr('y', 480)
+                        .style("opacity", 1)
+                        .attr('width', 200)
+                        .attr('height', 200)
+                        .attr('href', preurlB)
+
+				  svgL.append("image")
+				  		.attr('class', 'sliceP')
+                        .attr('x', 0)
+                        .attr('y', 240)
+                        .style("opacity", 1)
+                        .attr('width', 200)
+                        .attr('height', 200)
+                        .attr('href', preurlL)
+
+				  svgL.append("image")
+				  		.attr('class', 'sliceC')
+                        .attr('x', 0)
+                        .attr('y', 0)
+                        .style("opacity", 1)
+                        .attr('width', 200)
+                        .attr('height', 200)
+                        .attr('href', imgurlT)
+                        .on("mouseover", function(){
+                        	d3.selectAll(".sliceC")
+                        		.style("opacity", .2)
+                        })
+                        .on("mouseleave", function(){
+                        	d3.selectAll(".sliceC")
+                        		.style("opacity", 1)
+                        });
 
                   svgL.append("image")
-				  		.attr('class', 'slice')
+				  		.attr('class', 'sliceC')
                         .attr('x', 0)
-                        .attr('y', 420)
-                        .style("opacity", .05)
+                        .attr('y', 480)
+                        .style("opacity", 1)
                         .attr('width', 200)
                         .attr('height', 200)
-                        .attr('href', imgurlB);
-                  //slider     
-				  svgL.append("image")
-				  		.attr('class', 'slice')
-                        .attr('x', 0)
-                        .attr('y', 210)
-                        .style("opacity", .05)
-                        .attr('width', 200)
-                        .attr('height', 200)
-                        .attr('href', imgurlL);
+                        .attr('href', imgurlB)
+                        .on("mouseover", function(){
+                        	d3.selectAll(".sliceC")
+                        		.style("opacity", .2)
+                        })
+                        .on("mouseleave", function(){
+                        	d3.selectAll(".sliceC")
+                        		.style("opacity", 1)
+                        });
 
+				  svgL.append("image")
+				  		.attr('class', 'sliceC')
+                        .attr('x', 0)
+                        .attr('y', 240)
+                        .style("opacity", 1)
+                        .attr('width', 200)
+                        .attr('height', 200)
+                        .attr('href', imgurlL)
+                        .on("mouseover", function(){
+                        	d3.selectAll(".sliceC")
+                        		.style("opacity", .2)
+                        })
+                        .on("mouseleave", function(){
+                        	d3.selectAll(".sliceC")
+                        		.style("opacity", 1)
+                        });
+
+                   var container = document.querySelector("#svgL");
+ 
+					container.addEventListener("click", getClickPosition, false);
+					 
+					function getClickPosition(e) {
+					    var parentPosition = getPosition(e.currentTarget);
+					}
+					 
+					// Helper function to get an element's exact position
+					function getPosition(el) {
+					  var xPos = 0;
+					  var yPos = 0;
+					 
+					  while (el) {
+					    if (el.tagName == "BODY") {
+					      // deal with browser quirks with body/window/document and page scroll
+					      var xScroll = el.scrollLeft || document.documentElement.scrollLeft;
+					      var yScroll = el.scrollTop || document.documentElement.scrollTop;
+					 
+					      xPos += (el.offsetLeft - xScroll + el.clientLeft);
+					      yPos += (el.offsetTop - yScroll + el.clientTop);
+					    } else {
+					      // for all other non-BODY elements
+					      xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft);
+					      yPos += (el.offsetTop - el.scrollTop + el.clientTop);
+					    }
+					 
+					    el = el.offsetParent;
+					  }
+					console.log(xPos, yPos);
+					  return {
+					    x: xPos,
+					    y: yPos
+					  };
+					}
+                  var xB = 0;
                   svgL.append("text")
-                  	.attr("x", 230)
-                  	.attr("y", 100)
+                  	.attr("x", xB)
+                  	.attr("y", -5)
                   	.style("fill", "orange")
                   	.text("Slice " + base)
 
                   svgL.append("text")
-                  	.attr("x", 230)
-                  	.attr("y", 300)
+                  	.attr("x", xB)
+                  	.attr("y", 235)
                   	.style("fill", "lightgreen")
                   	.text("Slice " + (base+2))
 
                   svgL.append("text")
-                  	.attr("x", 230)
-                  	.attr("y", 500)
+                  	.attr("x", xB)
+                  	.attr("y", 475)
                   	.style("fill", "steelblue")
                   	.text("Slice " + (base+4))
 
