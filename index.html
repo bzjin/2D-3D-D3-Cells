@@ -78,32 +78,139 @@
 
 		<script type="text/javascript">
 
-			init();
+//init();
 
-			function init() {
+			window.onload = function() {
+      			all_imgs = [];
+      			for ( var i = 0; i <= 59; i++ ) {
+	     				var imgurl = "";
+						var preurl = "";
+						if (i < 10){ 
+							imgurl = 'slices/raw_000' + i + '.jpg'; 
+							preurl = 'slices/pre_000' + i + '.jpg';}
+						else { 
+							imgurl = 'slices/raw_00' + i + '.jpg';
+							preurl = 'slices/pre_00' + i + '.jpg';}
 
-			    var canvas = d3.select('#svg').append("canvas")
-				.attr("id", "canvas")
+						make_base(imgurl);
+
+						function make_base(imgurl) {
+		     				base_image = new Image();
+		     				base_image.src =  imgurl;
+		     				var x = (i- (Math.floor(i/6)*6)) * 65;
+		     				var y = Math.floor(i/6) * 75;
+
+		     				base_image.onload = function(){
+		     					all_imgs.push(base_image);
+		     				}
+	     				}
+	     			}// end for loop
+	     		 console.log(all_imgs)
+      			window.setTimeout(drawImages, 0);
+
+
+			    var canvas = d3.select('#canvas').append("canvas")
+				.attr("id", "bigcanvas")
 				.attr("width", 400)
-				.attr("height", 700);
+				.attr("height", 800);
 				
 			    var context = canvas.node().getContext("2d");
+			    context.fillStyle =("white");
 
-        		/*var svg = d3.select('#svg').append("svg")
+				context.font = "10px Effra";
+				context.textAlign = "start"
+				context.textBaseline = "hanging"
+
+        		var svg = d3.select('#svg').append("svg")
         				.attr("width", 400)
      					.attr("height", 700)
-     					.style("overflow", "visible");*/
+     					.style("overflow", "visible");
 
      			var svgL = d3.select('#svgL').append("svg")
         				.attr("width", 300)
      					.attr("height", 700)
      					.style("overflow", "visible");
 
+     			function drawImages() {
+	     			for ( var i = 0; i <= 59; i++ ) {
+	     				var imgurl = "";
+						var preurl = "";
+						if (i < 10){ 
+							imgurl = 'slices/raw_000' + i + '.jpg'; 
+							preurl = 'slices/pre_000' + i + '.jpg';}
+						else { 
+							imgurl = 'slices/raw_00' + i + '.jpg';
+							preurl = 'slices/pre_00' + i + '.jpg';}
 
-     			var svgR = d3.select('#svgR').append("svg")
-        				.attr("width", 300)
-     					.attr("height", 700)
-     					.style("overflow", "visible");
+						make_base(imgurl);
+
+						var color = d3.scaleLinear()
+									.domain([0, .5, 1])
+									.range(["#a50026","#d9ef8b","#006837"]);
+
+						function hexToRgb(hex) {
+						    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+						    return result ? {
+						        r: parseInt(result[1], 16),
+						        g: parseInt(result[2], 16),
+						        b: parseInt(result[3], 16)
+						    } : null;
+						}
+
+						//alert( hexToRgb("#0033ff").g ); // "51";
+
+						function make_base(imgurl) {
+		     				base_image = new Image();
+		     				base_image.src =  imgurl;
+		     				var x = (i- (Math.floor(i/6)*6)) * 65;
+		     				var y = Math.floor(i/6) * 75;
+
+		     				base_image.onload = function(){
+		     					context.drawImage(base_image, x, y, 60, 60 )
+
+		     					var imgData = context.getImageData(x, y, x+59, y+59);
+		     					var allcolors = [];
+
+			                    for (var k=0;k<imgData.data.length;k+=4){
+
+			                    	var rgb_str = "(" + imgData.data[k] + "," + imgData.data[k+1] + "," + imgData.data[k+2] + ")";
+									if (allcolors.indexOf(rgb_str) == -1){
+									  	allcolors.push(rgb_str)
+									}
+
+								}
+								allcolors.sort();
+								//console.log(allcolors); //FOR THE DEMO. Shows how many colors and which ones are in each pixel
+
+								for (var k=0;k<imgData.data.length;k+=4){
+										//var c = d3.color();
+										//console.log(d3.color(color(imgData.data[k]/255)))
+										if (imgData.data[k] > 25 && imgData.data[k] < 30){
+									  		imgData.data[k]= 255; //red
+									    } else if (imgData.data[k] > 20 && imgData.data[k] < 25) {
+									  		imgData.data[k+1]= 255; 
+									    } else if (imgData.data[k] < 20){
+									    	imgData.data[k+2]= 255; 
+									    }
+									  	//imgData.data[k+1]= imgData.data[k+1]; //green
+									  	//imgData.data[k+2]= imgData.data[k+2]; //blue
+									  /*else {
+									  	imgData.data[k]=255-imgData.data[k]; //red
+									  	imgData.data[k+1]=255-imgData.data[k+1]; //green
+									  	imgData.data[k+2]=255-imgData.data[k+2]; //blue
+									  //imgData.data[k+3]= 255-imgData.data[k+3];
+									  }*/
+									  
+								}
+
+								context.putImageData(imgData, x, y);	
+		     				}
+	     				}
+
+
+	     			}// end for loop
+	     		}
+
 
 				for ( var i = 0; i <= 59; i++ ) {
 					var imgurl = "";
@@ -148,6 +255,15 @@
                         	d3.selectAll("#" + this.getAttribute("id"))
                         		.attr("opacity", 1)
                         });
+
+                     
+
+/*
+                    for (m = 0; m < 60; m++){
+                    	for (n = 0; n < 60; n++){
+                    		var col = context.getImageData(x + m, x+n,)
+                    	}
+                    }*/
                     
                     svg.append('text')
                         .attr('class', 'numbers')
@@ -157,27 +273,11 @@
                         .attr("fill", "white")
                         .text(i)
 
-                     $(function() {
-					    $.ajax({
-					        url: "http://mkweb.bcgsc.ca/color-summarizer/?url=IMAGE_URL&precision=low&num_clusters=0&json=1",
-					        type: 'GET',
-							xhrFields: {
-							    withCredentials: true
-							  },        
-					        crossDomain: true,
-					        dataType: 'json',
-					        //headers: '[Does something go here?]',
-					        success: function(data, status, xhr)
-					        {
-					        	console.log(data)
-					        },
-					        error: function(xhr, status, error)
-					        {
-					            console.log("Error: " + status + " " + error);
-					        }
-					    });
-					}); 
-				}
+                     var imgurl = "github.com/bzjin/2D-3D-D3-Cells/slices/" + preurl + ".jpg";
+                     var bigurl = "http://mkweb.bcgsc.ca/color-summarizer/?url=" + imgurl + "&precision=low&num_clusters=0&json=1";
+
+                  }
+				
 
 				svgL.append('image')
                         .attr('class', 'slice')
