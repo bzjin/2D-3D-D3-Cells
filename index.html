@@ -165,7 +165,7 @@
 		     				var x = (i- (Math.floor(i/6)*6)) * 65;
 		     				var y = Math.floor(i/6) * 75;
 
-		     				base_image.onload = function(){
+		     				//base_image.onload = function(){
 		     					context.drawImage(base_image, x, y, 60, 60 )
 
 		     					var imgData = context.getImageData(x, y, x+59, y+59);
@@ -211,7 +211,7 @@
 
 								context.putImageData(imgData, x, y);	
 		     				}
-	     				}
+	     				
 
 
 	     			}// end for loop
