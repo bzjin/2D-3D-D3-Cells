@@ -20,7 +20,6 @@
 			}
 			div {
 				padding: 20px;
-				margin: 20px;
 				float: left;
 			}
 			text { font-size: 11px; }
@@ -64,8 +63,8 @@
 	<body>
 		<!--<div id="svg"></div>-->
 		<!--<div id="svgL"></div>-->
-		<div id="canvas"></div>
 		<div id="canvasL"></div>
+		<div id="scroller"></div>
 
 		<div id="container"></div>
 		<!-- D3 Library --> <script src="js/d3.v4.min.js"></script>
@@ -112,20 +111,17 @@
       			window.setTimeout(drawImages, 500);
 
 
-			    var canvas = d3.select('#canvas').append("canvas")
+				var canvas = d3.select('#canvasL').append("canvas")
 				.attr("id", "bigcanvas")
-				.attr("width", 400)
+				.attr("width", 900)
 				.attr("height", 800);
 				
-			    var context = canvas.node().getContext("2d");
-			    context.fillStyle =("white");
+				var scroller = d3.select('#scroller').append("svg")
+				.attr("id", "scroll")
+				.attr("width", 240)
+				.attr("height", 100);
 
-			    var canvasL = d3.select('#canvasL').append("canvas")
-				.attr("id", "bigcanvas")
-				.attr("width", 400)
-				.attr("height", 800);
-				
-			    var contextL = canvasL.node().getContext("2d");
+			    var context = canvas.node().getContext("2d");
 			    context.fillStyle =("white");
 
 				context.font = "10px Effra";
@@ -239,46 +235,11 @@
 					else { 
 						imgurl = 'slices/raw_00' + i + '.jpg';
 						preurl = 'slices/pre_00' + i + '.jpg';}
-
-					svg.append('rect')
-						.attr('class', 'slice')
-                        .attr('id', 'slice' + i)
-                        .attr('x', (i- (Math.floor(i/6)*6)) * 65)
-                        .attr('y', Math.floor(i/6) * 75)
-                        .attr('width', 60)
-                        .attr('height', 60)
-
-					svg.append('image')
-                        .attr('class', 'slice')
-                        .attr('id', 'preslice' + i)
-                        .attr('x', (i- (Math.floor(i/6)*6)) * 65)
-                        .attr('y', Math.floor(i/6) * 75)
-                        .attr('width', 60)
-                        .attr('height', 60)
-                        .attr('href', preurl)
-
-					svg.append('image')
-                        .attr('class', 'slice')
-                        .attr('id', 'slice' + i)
-                        .attr('x', (i- (Math.floor(i/6)*6)) * 65)
-                        .attr('y', Math.floor(i/6) * 75)
-                        .attr('width', 60)
-                        .attr('height', 60)
-                        .attr('href', imgurl)
-                        .on("mouseover", function(){
-                        	d3.selectAll("#" + this.getAttribute("id"))
-                        		.attr("opacity", .2)
-                        })
-                        .on("mouseleave", function(){
-                        	d3.selectAll("#" + this.getAttribute("id"))
-                        		.attr("opacity", 1)
-                        });
-
                      
                     bigsq1 = new Image();
  					bigsq1.src =  'slices/raw_0059.jpg';
- 					contextL.drawImage(bigsq1, 0, 0, 200, 200 )
-					var bigData = contextL.getImageData(0, 0, 200, 200);
+ 					//context.drawImage(bigsq1, 0, 0, 200, 200 )
+					var bigData = context.getImageData(0, 0, 200, 200);
 
 					for (var k=0;k<bigData.data.length;k+=4){
 						var m = 30;
@@ -298,7 +259,7 @@
 					    	bigData.data[k+2]= 255;
 					    }
 					}
-					contextL.putImageData(bigData, 0, 0);	
+					context.putImageData(bigData, 0, 0);	
      				
 /*
                     for (m = 0; m < 60; m++){
@@ -307,51 +268,25 @@
                     	}
                     }*/
                     
-                    svg.append('text')
-                        .attr('class', 'numbers')
-                        .attr('x', (i- (Math.floor(i/6)*6)) * 65)
-                        .attr('y', Math.floor(i/6) * 75 )
-                        .attr("font-size", 10)
-                        .attr("fill", "white")
-                        .text(i)
-
                      var imgurl = "github.com/bzjin/2D-3D-D3-Cells/slices/" + preurl + ".jpg";
                      var bigurl = "http://mkweb.bcgsc.ca/color-summarizer/?url=" + imgurl + "&precision=low&num_clusters=0&json=1";
 
-                  }
+                  } //end for loop for appending 60 images to the side
 				
-/*
-				svgL.append('image')
-                        .attr('class', 'slice')
-                        .attr('x', 0)
-                        .attr('y', 0)
-                        .style("opacity", 1)
-                        .attr('width', 200)
-                        .attr('height', 200)
-                        .attr('href', 'slices/raw_0001.jpg');
 
-				svgL.append('image')
-                        .attr('class', 'slice')
-                        .attr('x', 0)
-                        .attr('y', 240)
-                        .style("opacity", 1)
-                        .attr('width', 200)
-                        .attr('height', 200)
-                        .attr('href', 'slices/raw_0001.jpg');
+				context.beginPath();
+				context.lineWidth="1";
+				context.strokeStyle="white";
+				context.rect(640,0,200,200); 
+				context.stroke();
 
-				svgL.append('image')
-                        .attr('class', 'slice')
-                        .attr('x', 0)
-                        .attr('y', 480)
-                        .style("opacity", 1)
-                        .attr('width', 200)
-                        .attr('height', 200)
-                        .attr('href', 'slices/raw_0001.jpg');
+				context.fillText("Slice 1",845, 0);
+				context.fillText("Slice 60",845, 190);
 
 				//Slider
 				var x = d3.scaleLinear()
 				    .domain([0, 59])
-				    .range([10, 190])
+				    .range([10, 210])
 				    .clamp(true);
 
 				var xInt = d3.scaleLinear()
@@ -359,14 +294,16 @@
 				    .range([0, 59])
 				    .clamp(true);
 
-				var slider = svgL.append("g")
+				var slider = scroller.append("g")
 				    .attr("class", "slider")
 				    .attr("transform", "translate(0, 720)")
 
-				slider.append("line")
+				scroller.append("line")
 				    .attr("class", "track")
 				    .attr("x1", x.range()[0])
 				    .attr("x2", x.range()[1])
+				    .attr("y1", 20)
+				    .attr("y2", 20)
 				  .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
 				    .attr("class", "track-inset")
 				  .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
@@ -375,213 +312,141 @@
 				        .on("start.interrupt", function() { slider.interrupt(); })
 				        .on("start drag", function() { hue(x.invert(d3.event.x)); }));
 
-				slider.insert("g", ".track-overlay")
+				scroller.insert("g", ".track-overlay")
 				    .attr("class", "ticks")
-				    .attr("transform", "translate(0," + 18 + ")")
+				    .attr("transform", "translate(0," + 40 + ")")
 				  .selectAll("text")
 				  .data(x.ticks(10))
 				  .enter().append("text")
 				    .attr("x", x)
+				    .style("fill", "white")
 				    .attr("text-anchor", "middle")
 				    .text(function(d) { return d});
 
-				var handle = slider.insert("circle", ".track-overlay")
+				var handle = scroller.insert("circle", ".track-overlay")
 				    .attr("class", "handle")
-				    .attr("r", 9);
+				    .attr("r", 9)
+				    .attr("cx", x.range()[0])
+				    .attr("cy", 20);
+
+				/*canvas.node().addEventListener('mousedown', function(evt) {
+			        var mousePos = getMousePos(canvas, evt);
+			        var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+			        //writeMessage(canvas, message, mousePos.x, mousePos.y);
+			      }, false);
+
+				function writeMessage(canvas, message, x, y) {
+			        context.clearRect(0, 0, canvas.width, canvas.height);
+			        context.font = '18pt Calibri';
+			        context.fillStyle = 'white';
+			        context.fillText(message, x, y);
+			      }*/
+
+			      function getMousePos(canvas, evt) {
+			        var rect = canvas.node().getBoundingClientRect();
+			        //console.log(evt.clientX, evt.clientY);
+			        return {
+			        	x: (evt.clientX-rect.left)/(rect.right-rect.left)*900,
+						y: (evt.clientY-rect.top)/(rect.bottom-rect.top)*800
+			          //x: evt.clientX - rect.left,
+			          //y: evt.clientY - rect.top
+			        };
+			      }
 
 				function hue(h) {
-				  svgL.selectAll("text").remove();
 
 				  handle.attr("cx", x(h));
 				  var imgurlL = "", imgurlT = "", imgurlB = "";
-				  var preurlL = "", preurlT = "", preurlB = "";
 				  
-				  var base = Math.floor(xInt(h));
+				  base = Math.floor(xInt(h));
 				  
 				  if (base < 10) { 
-				  	imgurlT = 'slices/raw_000' + base + '.jpg';
-				  	preurlT = 'slices/pre_000' + base + '.jpg';} 
+				  	imgurlT = 'slices/raw_000' + base + '.jpg';}
+				  	//xzurl = 'slices/xz_000' + base + '.jpg';}
 				  else { 
-				  	imgurlT = 'slices/raw_00' + base + '.jpg';
-				  	preurlT = 'slices/pre_00' + base + '.jpg';}
-				  if (base + 2 < 10) { 	
-				  	imgurlL = 'slices/raw_000' + (base+2) + '.jpg';
-				  	preurlL = 'slices/pre_000' + (base+2) + '.jpg';}
-				  else if (base + 2 > 59) { 
-				  	imgurlL = 'slices/raw_00' + base + '.jpg'; 
-				  	preurlL = 'slices/pre_00' + base + '.jpg'; }
+				  	imgurlT = 'slices/raw_00' + base + '.jpg';}
+					//xzurl = 'slices/xz_00' + base + '.jpg';}
+
+				  bigsq = new Image();
+				  bigsq.src =  imgurlT;
+				  context.drawImage(bigsq, 400, 0, 200, 200 )
+
+				  
+		     				 	  //bigSqData = context.getImageData(0, 0, 200, 200);
+		     	  context.clearRect(605, 0, 30, 200);
+		     	  context.fillRect(605, base/60*200, 30, 3);
+
+				} //end hue
+
+				canvas.node().addEventListener('mousedown', function(evt) {
+			        var mousePos = getMousePos(canvas, evt);
+			        //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+			        drawScribble(mousePos.x, mousePos.y, base);
+			      }, false);
+
+				canvas.node().addEventListener('mouseover', function(evt) {
+			        var mousePos = getMousePos(canvas, evt);
+			        //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+			        changeXZPlane(mousePos.x, mousePos.y, base);
+			      }, false);
+
+		 	  function drawScribble(xPos, yPos, zPos){
+		 	  	  var xzurl = "";
+		 	  	  var ySlice = Math.floor(yPos/200*60);
+
+				  if (ySlice < 10) { 
+				  	xzurl = 'slices/xz_000' + ySlice + '.jpg';}
 				  else { 
-				  	imgurlL = 'slices/raw_00' + (base+2) + '.jpg';
-				    preurlL = 'slices/pre_00' + (base+2) + '.jpg';}
-				  if (base + 4 < 10) { 	
-				  	imgurlB = 'slices/raw_000' + (base+4) + '.jpg';
-				  	preurlB = 'slices/pre_000' + (base+4) + '.jpg';}
-				  else if (base + 4 > 59) { 
-				  	imgurlL = 'slices/raw_00' + base + '.jpg'; 
-				    preurlL = 'slices/pre_00' + base + '.jpg'; }
+					xzurl = 'slices/xz_00' + ySlice + '.jpg';}
+		 	  	  
+
+		 	  	  //console.log(xPos, yPos, zPos/60*200);
+		 	  	  var radius = (200-yPos)/30;
+		 	  	  //var zPos = base;
+			      context.beginPath();
+			      context.arc(xPos + 240, zPos/60*200, radius, 0, 2 * Math.PI, false);
+			      context.fillStyle = 'yellow';
+			      context.fill();
+
+			      context.beginPath();
+			      context.arc(xPos, yPos, 5, 0, 2 * Math.PI, false);
+			      context.fill();
+/*
+			      context.beginPath();
+			      context.arc(xPos + 240, zPos/60*200 + 210, 5, 0, 2 * Math.PI, false);
+			      context.fillStyle = 'red';
+			      context.fill();*/
+
+			      context.fillStyle = 'white';
+
+			      xzsq = new Image();
+				  xzsq.src =  xzurl;
+
+				  context.drawImage(xzsq, 640, 220, 200, 200);
+		 	  }
+
+		 	  function changeXZPlane(xPos, yPos, zPos){
+		 	  	  var xzurl = "";
+		 	  	  var ySlice = Math.floor(yPos/200*60);
+				  if (ySlice < 10) { 
+				  	xzurl = 'slices/xz_000' + ySlice + '.jpg';}
 				  else { 
-				  	imgurlB = 'slices/raw_00' + (base+4) + '.jpg';
-				  	preurlB = 'slices/pre_00' + (base+4) + '.jpg';}
+					xzurl = 'slices/xz_00' + ySlice + '.jpg';}
+			      xzsq = new Image();
 
-				  svg.selectAll(".slice")
-				  	.style("stroke-width", 0)
+				  xzsq.src =  xzurl;
 
-				  svg.selectAll(".sliceC").remove();
+				  context.drawImage(xzsq, 640, 220, 200, 200);
 
-				  d3.selectAll("#slice"+base)
-				  	.style("stroke", "orange")
-				  	.style("stroke-width", 5)
+		 	  }
 
-				  d3.selectAll("#slice"+(base+2))
-				  	.style("stroke", "lightgreen")
-				  	.style("stroke-width", 5)
-
-				  d3.selectAll("#slice"+(base+4))
-				  	.style("stroke", "steelblue")
-				  	.style("stroke-width", 5)
-					
-
-				 svgL.append("image")
-				  		.attr('class', 'sliceP')
-                        .attr('x', 0)
-                        .attr('y', 0)
-                        .style("opacity", 1)
-                        .attr('width', 200)
-                        .attr('height', 200)
-                        .attr('href', preurlT)
-   
-                  svgL.append("image")
-				  		.attr('class', 'sliceP')
-                        .attr('x', 0)
-                        .attr('y', 480)
-                        .style("opacity", 1)
-                        .attr('width', 200)
-                        .attr('height', 200)
-                        .attr('href', preurlB)
-
-				  svgL.append("image")
-				  		.attr('class', 'sliceP')
-                        .attr('x', 0)
-                        .attr('y', 240)
-                        .style("opacity", 1)
-                        .attr('width', 200)
-                        .attr('height', 200)
-                        .attr('href', preurlL)
-
-				  svgL.append("image")
-				  		.attr('class', 'sliceC')
-                        .attr('x', 0)
-                        .attr('y', 0)
-                        .style("opacity", 1)
-                        .attr('width', 200)
-                        .attr('height', 200)
-                        .attr('href', imgurlT)
-                        .on("mouseover", function(){
-                        	d3.selectAll(".sliceC")
-                        		.style("opacity", .2)
-                        })
-                        .on("mouseleave", function(){
-                        	d3.selectAll(".sliceC")
-                        		.style("opacity", 1)
-                        });
-
-                  svgL.append("image")
-				  		.attr('class', 'sliceC')
-                        .attr('x', 0)
-                        .attr('y', 480)
-                        .style("opacity", 1)
-                        .attr('width', 200)
-                        .attr('height', 200)
-                        .attr('href', imgurlB)
-                        .on("mouseover", function(){
-                        	d3.selectAll(".sliceC")
-                        		.style("opacity", .2)
-                        })
-                        .on("mouseleave", function(){
-                        	d3.selectAll(".sliceC")
-                        		.style("opacity", 1)
-                        });
-
-				  svgL.append("image")
-				  		.attr('class', 'sliceC')
-                        .attr('x', 0)
-                        .attr('y', 240)
-                        .style("opacity", 1)
-                        .attr('width', 200)
-                        .attr('height', 200)
-                        .attr('href', imgurlL)
-                        .on("mouseover", function(){
-                        	d3.selectAll(".sliceC")
-                        		.style("opacity", .2)
-                        })
-                        .on("mouseleave", function(){
-                        	d3.selectAll(".sliceC")
-                        		.style("opacity", 1)
-                        });
-
-                   var container = document.querySelector("#svgL");
- 
-					container.addEventListener("click", getClickPosition, false);
-					 
-					function getClickPosition(e) {
-					    var parentPosition = getPosition(e.currentTarget);
-					}
-					 
-					// Helper function to get an element's exact position
-					function getPosition(el) {
-					  var xPos = 0;
-					  var yPos = 0;
-					 
-					  while (el) {
-					    if (el.tagName == "BODY") {
-					      // deal with browser quirks with body/window/document and page scroll
-					      var xScroll = el.scrollLeft || document.documentElement.scrollLeft;
-					      var yScroll = el.scrollTop || document.documentElement.scrollTop;
-					 
-					      xPos += (el.offsetLeft - xScroll + el.clientLeft);
-					      yPos += (el.offsetTop - yScroll + el.clientTop);
-					    } else {
-					      // for all other non-BODY elements
-					      xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft);
-					      yPos += (el.offsetTop - el.scrollTop + el.clientTop);
-					    }
-					 
-					    el = el.offsetParent;
-					  }
-					console.log(xPos, yPos);
-					  return {
-					    x: xPos,
-					    y: yPos
-					  };
-					}
-                  var xB = 0;
-                  svgL.append("text")
-                  	.attr("x", xB)
-                  	.attr("y", -5)
-                  	.style("fill", "orange")
-                  	.text("Slice " + base)
-
-                  svgL.append("text")
-                  	.attr("x", xB)
-                  	.attr("y", 235)
-                  	.style("fill", "lightgreen")
-                  	.text("Slice " + (base+2))
-
-                  svgL.append("text")
-                  	.attr("x", xB)
-                  	.attr("y", 475)
-                  	.style("fill", "steelblue")
-                  	.text("Slice " + (base+4))
-
-				}
-*/
-			}
-
+}
+/*
 			var camera, scene, renderer;
 			var scene2, renderer2;
 			var controls;
-			init();
-			animate();
+			//init();
+			//animate();
 
 			function init() {
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
@@ -611,7 +476,7 @@
 					//object.position.z = i * 20  - 100;
 					object.rotation.x = 90;
 					/*object.rotation.y = Math.random();
-					object.rotation.z = Math.random();*/
+					object.rotation.z = Math.random();
 					object.scale.x = i/20 + 0.5;
 					object.scale.y = i/20 + 0.5;
 					scene2.add( object );
@@ -642,7 +507,7 @@
 				renderer2.render( scene2, camera );
 			}
 
-
+*/
 
 			
 

@@ -136,3 +136,8 @@ div.footertext {
   line-height: 20px;
   clear: both;
 }
+
+div#canvasL, div#svg {
+  margin: 0 !important;
+}
+
