@@ -143,11 +143,9 @@
 	     				var imgurl = "";
 						var preurl = "";
 						if (i < 10){ 
-							imgurl = 'slices/raw_000' + i + '.jpg'; 
-							preurl = 'slices/pre_000' + i + '.jpg';}
+							imgurl = 'slices/raw_000' + i + '.jpg'; }
 						else { 
-							imgurl = 'slices/raw_00' + i + '.jpg';
-							preurl = 'slices/pre_00' + i + '.jpg';}
+							imgurl = 'slices/raw_00' + i + '.jpg';}
 
 						make_base(imgurl);
 
@@ -169,13 +167,13 @@
 						function make_base(imgurl) {
 		     				base_image = new Image();
 		     				base_image.src =  imgurl;
-		     				var x = (i- (Math.floor(i/6)*6)) * 65;
-		     				var y = Math.floor(i/6) * 75;
+		     				//var x = (i- (Math.floor(i/6)*6)) * 65;
+		     				//var y = Math.floor(i/6) * 75;
 
 		     				//base_image.onload = function(){
-		     					context.drawImage(base_image, x, y, 60, 60 )
+		     					context.drawImage(base_image, 0, 0, 200, 200 )
 
-		     					var imgData = context.getImageData(x, y, x+59, y+59);
+		     					var imgData = context.getImageData(0, 0, 200, 200);
 		     					var allcolors = [];
 
 			                    for (var k=0;k<imgData.data.length;k+=4){
@@ -217,7 +215,7 @@
 									  
 								}
 
-								context.putImageData(imgData, x, y);	
+								context.putImageData(imgData, 0,0);	
 		     				}
 	     				
 
@@ -249,11 +247,9 @@
 					  		bigData.data[k]= 255; //red
 					  		bigData.data[k+1]= 195; 
 					    	bigData.data[k+2]= 0; 
-					    } else if (bigData.data[k] > m && bigData.data[k] <= (m+5)) {
-					  		bigData.data[k]= 255; //red
-					  		bigData.data[k+1]= 87; 
-					    	bigData.data[k+2]= 51; 
-					    } else if (bigData.data[k] <= m && bigData.data[k] <= (m-5)){
+					    } else if (bigData.data[k] > m && bigData.data[k] <= (m+5)){
+					  		bigData.data[k+3] =0;
+					    } else if (bigData.data[k] <= m && bigData.data[k] >= (m-5)){
 					    	bigData.data[k]= 199; //red
 					  		bigData.data[k+1]= 0; 
 					    	bigData.data[k+2]= 255;
@@ -384,10 +380,12 @@
 			        drawScribble(mousePos.x, mousePos.y, base);
 			      }, false);
 
-				canvas.node().addEventListener('mouseover', function(evt) {
+				canvas.node().addEventListener('mousemove', function(evt) {
 			        var mousePos = getMousePos(canvas, evt);
 			        //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-			        changeXZPlane(mousePos.x, mousePos.y, base);
+			        if ((mousePos.x >= 400 && mousePos.x <= 600) && (mousePos.y >= 0 && mousePos.y <= 200)){
+			        	changeXZPlane(mousePos.x, mousePos.y, base);
+			        }
 			      }, false);
 
 		 	  function drawScribble(xPos, yPos, zPos){
