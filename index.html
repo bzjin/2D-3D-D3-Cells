@@ -79,37 +79,17 @@
 		<script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
 
 		<script type="text/javascript">
+			var drawnScribblesX = [];
+			var drawnScribblesY = [];
+			var drawnScribblesZ = [];
 
-//init();
+			for (var i = 0; i <=59; i++){
+				drawnScribblesX.push({"number": i, "scribbles": []})
+				drawnScribblesY.push({"number": i, "scribbles": []})
+				drawnScribblesZ.push({"number": i, "scribbles": []})
+			}
 
 			window.onload = function() {
-      			all_imgs = [];
-      			for ( var i = 0; i <= 59; i++ ) {
-	     				var imgurl = "";
-						var preurl = "";
-						if (i < 10){ 
-							imgurl = 'slices/raw_000' + i + '.jpg'; 
-							preurl = 'slices/pre_000' + i + '.jpg';}
-						else { 
-							imgurl = 'slices/raw_00' + i + '.jpg';
-							preurl = 'slices/pre_00' + i + '.jpg';}
-
-						make_base(imgurl);
-
-						function make_base(imgurl) {
-		     				base_image = new Image();
-		     				base_image.src =  imgurl;
-		     				var x = (i- (Math.floor(i/6)*6)) * 65;
-		     				var y = Math.floor(i/6) * 75;
-
-		     				base_image.onload = function(){
-		     					all_imgs.push(base_image);
-		     				}
-	     				}
-	     			}// end for loop
-	     		//console.log(all_imgs)
-      			window.setTimeout(drawImages, 500);
-
 
 				var canvas = d3.select('#canvasL').append("canvas")
 				.attr("id", "bigcanvas")
@@ -138,91 +118,7 @@
      					.attr("height", 700)
      					.style("overflow", "visible");
 
-     			function drawImages() {
-	     			for ( var i = 0; i <= 59; i++ ) {
-	     				var imgurl = "";
-						var preurl = "";
-						if (i < 10){ 
-							imgurl = 'slices/raw_000' + i + '.jpg'; }
-						else { 
-							imgurl = 'slices/raw_00' + i + '.jpg';}
-
-						make_base(imgurl);
-
-						var color = d3.scaleLinear()
-									.domain([0, .5, 1])
-									.range(["#a50026","#d9ef8b","#006837"]);
-
-						function hexToRgb(hex) {
-						    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-						    return result ? {
-						        r: parseInt(result[1], 16),
-						        g: parseInt(result[2], 16),
-						        b: parseInt(result[3], 16)
-						    } : null;
-						}
-
-						//alert( hexToRgb("#0033ff").g ); // "51";
-
-						function make_base(imgurl) {
-		     				base_image = new Image();
-		     				base_image.src =  imgurl;
-		     				//var x = (i- (Math.floor(i/6)*6)) * 65;
-		     				//var y = Math.floor(i/6) * 75;
-
-		     				//base_image.onload = function(){
-		     					context.drawImage(base_image, 0, 0, 200, 200 )
-
-		     					var imgData = context.getImageData(0, 0, 200, 200);
-		     					var allcolors = [];
-
-			                    for (var k=0;k<imgData.data.length;k+=4){
-
-			                    	var rgb_str = "(" + imgData.data[k] + "," + imgData.data[k+1] + "," + imgData.data[k+2] + ")";
-									if (allcolors.indexOf(rgb_str) == -1){
-									  	allcolors.push(rgb_str)
-									}
-
-								}
-								allcolors.sort();
-								//console.log(allcolors); //FOR THE DEMO. Shows how many colors and which ones are in each pixel
-
-								for (var k=0;k<imgData.data.length;k+=4){
-										var m = 30;
-										//var c = d3.color();
-										//console.log(d3.color(color(imgData.data[k]/255)))
-										if (imgData.data[k] > (m+5) && imgData.data[k] < (m+10)){
-									  		imgData.data[k]= 255; //red
-									  		imgData.data[k+1]= 195; 
-									    	imgData.data[k+2]= 0; 
-									    } else if (imgData.data[k] > m && imgData.data[k] <= (m+5)) {
-									  		imgData.data[k]= 255; //red
-									  		imgData.data[k+1]= 87; 
-									    	imgData.data[k+2]= 51; 
-									    } else if (imgData.data[k] <= m && imgData.data[k] <= (m-5)){
-									    	imgData.data[k]= 199; //red
-									  		imgData.data[k+1]= 0; 
-									    	imgData.data[k+2]= 255;
-									    }
-									  	//imgData.data[k+1]= imgData.data[k+1]; //green
-									  	//imgData.data[k+2]= imgData.data[k+2]; //blue
-									  /*else {
-									  	imgData.data[k]=255-imgData.data[k]; //red
-									  	imgData.data[k+1]=255-imgData.data[k+1]; //green
-									  	imgData.data[k+2]=255-imgData.data[k+2]; //blue
-									  //imgData.data[k+3]= 255-imgData.data[k+3];
-									  }*/
-									  
-								}
-
-								context.putImageData(imgData, 0,0);	
-		     				}
-	     				
-
-
-	     			}// end for loop
-	     		}
-
+     			
 
 				for ( var i = 0; i <= 59; i++ ) {
 					var imgurl = "";
@@ -236,8 +132,8 @@
                      
                     bigsq1 = new Image();
  					bigsq1.src =  'slices/raw_0059.jpg';
- 					//context.drawImage(bigsq1, 0, 0, 200, 200 )
-					var bigData = context.getImageData(0, 0, 200, 200);
+ 					//context.drawImage(bigsq1, 0, 0, 300, 300 )
+					/*var bigData = context.getImageData(0, 0, 300, 300);
 
 					for (var k=0;k<bigData.data.length;k+=4){
 						var m = 30;
@@ -255,7 +151,7 @@
 					    	bigData.data[k+2]= 255;
 					    }
 					}
-					context.putImageData(bigData, 0, 0);	
+					context.putImageData(bigData, 0, 0);*/	
      				
 /*
                     for (m = 0; m < 60; m++){
@@ -273,11 +169,17 @@
 				context.beginPath();
 				context.lineWidth="1";
 				context.strokeStyle="white";
-				context.rect(640,0,200,200); 
+				context.rect(350,0,300,300); 
 				context.stroke();
 
-				context.fillText("Slice 1",845, 0);
-				context.fillText("Slice 60",845, 190);
+				context.beginPath();
+				context.lineWidth="1";
+				context.strokeStyle="white";
+				context.rect(0,350,300,300); 
+				context.stroke();
+
+				context.fillText("Slice 1", 655, 0);
+				context.fillText("Slice 60", 655, 290);
 
 				//Slider
 				var x = d3.scaleLinear()
@@ -349,6 +251,7 @@
 			        };
 			      }
 
+			    //SLIDER and SCROLLER that changes XY interface
 				function hue(h) {
 
 				  handle.attr("cx", x(h));
@@ -365,32 +268,59 @@
 
 				  bigsq = new Image();
 				  bigsq.src =  imgurlT;
-				  context.drawImage(bigsq, 400, 0, 200, 200 )
+				  context.drawImage(bigsq, 0, 0, 300, 300 )
+  				  //changeColors();
+		     	//bigSqData = context.getImageData(0, 0, 200, 200);
+		     	  context.clearRect(310, 0, 40, 300);
+		     	  context.clearRect(351, 1, 298, 298);
+			      context.fillStyle = 'white';
+		     	  context.fillRect(310, base/60*300, 40, 3);
 
-				  
-		     				 	  //bigSqData = context.getImageData(0, 0, 200, 200);
-		     	  context.clearRect(605, 0, 30, 200);
-		     	  context.fillRect(605, base/60*200, 30, 3);
-
+		     	  drawnScribblesZ[base].scribbles.forEach(function(d){
+ 					 context.beginPath();
+			         context.arc(d.x, d.y, 5, 0, 2 * Math.PI, false);
+			         context.fillStyle = 'yellow';
+			         context.fill();
+		     	  })
 				} //end hue
+
+
+
 
 				canvas.node().addEventListener('mousedown', function(evt) {
 			        var mousePos = getMousePos(canvas, evt);
-			        //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-			        drawScribble(mousePos.x, mousePos.y, base);
+			        if ((mousePos.x >= 0 && mousePos.x <= 300) && (mousePos.y >= 0 && mousePos.y <= 300)){
+			        	drawScribble(mousePos.x, mousePos.y, base);
+			        }
 			      }, false);
 
 				canvas.node().addEventListener('mousemove', function(evt) {
 			        var mousePos = getMousePos(canvas, evt);
 			        //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-			        if ((mousePos.x >= 400 && mousePos.x <= 600) && (mousePos.y >= 0 && mousePos.y <= 200)){
+			        if ((mousePos.x >= 0 && mousePos.x <= 300) && (mousePos.y >= 0 && mousePos.y <= 300)){
 			        	changeXZPlane(mousePos.x, mousePos.y, base);
+
 			        }
+
+			        /*  if ((mousePos.x >= 350 && mousePos.x <= 650) && (mousePos.y >= 0 && mousePos.y <= 350)){
+			        	changeXYPlane(mousePos.x, mousePos.y, base);
+			        }*/
 			      }, false);
+/*
+				canvas.node().addEventListener('mousewheel', function(evt) {
+			        var mousePos = getMousePos(canvas, evt);
+			        //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+			        if ((mousePos.x >= 400 && mousePos.x <= 600) && (mousePos.y >= 0 && mousePos.y <= 200)){
+			        	changeXYPlane(mousePos.x, mousePos.y, base);
+			        }
+			      }, false);*/
+
+
+
 
 		 	  function drawScribble(xPos, yPos, zPos){
 		 	  	  var xzurl = "";
-		 	  	  var ySlice = Math.floor(yPos/200*60);
+		 	  	  var ySlice = Math.floor(yPos/300*60);
 
 				  if (ySlice < 10) { 
 				  	xzurl = 'slices/xz_000' + ySlice + '.jpg';}
@@ -399,33 +329,41 @@
 		 	  	  
 
 		 	  	  //console.log(xPos, yPos, zPos/60*200);
-		 	  	  var radius = (200-yPos)/30;
+		 	  	  var radius = (300-yPos)/30;
 		 	  	  //var zPos = base;
 			      context.beginPath();
-			      context.arc(xPos + 240, zPos/60*200, radius, 0, 2 * Math.PI, false);
+			      context.arc(xPos + 350, zPos/60*300, 5, 0, 2 * Math.PI, false);
 			      context.fillStyle = 'yellow';
 			      context.fill();
 
 			      context.beginPath();
 			      context.arc(xPos, yPos, 5, 0, 2 * Math.PI, false);
 			      context.fill();
-/*
+
+			      context.beginPath();
+			      context.arc(xPos, zPos/60*300 + 350, radius, 0, 2 * Math.PI, false);
+			      context.fill();
+				  
+				  /*
 			      context.beginPath();
 			      context.arc(xPos + 240, zPos/60*200 + 210, 5, 0, 2 * Math.PI, false);
 			      context.fillStyle = 'red';
 			      context.fill();*/
 
 			      context.fillStyle = 'white';
-
+			      /*
 			      xzsq = new Image();
 				  xzsq.src =  xzurl;
+				  context.drawImage(xzsq, 350, 320, 300, 300);*/
 
-				  context.drawImage(xzsq, 640, 220, 200, 200);
-		 	  }
+				  drawnScribblesX[Math.floor(xPos/300*60)].scribbles.push({"x": xPos, "y": yPos, "z": zPos})
+				  drawnScribblesY[ySlice].scribbles.push({"x": xPos, "y": zPos/60*300, "z": ySlice})
+				  drawnScribblesZ[zPos].scribbles.push({"x": xPos, "y": yPos, "z": zPos})
+   		 	  }
 
 		 	  function changeXZPlane(xPos, yPos, zPos){
 		 	  	  var xzurl = "";
-		 	  	  var ySlice = Math.floor(yPos/200*60);
+		 	  	  var ySlice = Math.floor(yPos/300*60);
 				  if (ySlice < 10) { 
 				  	xzurl = 'slices/xz_000' + ySlice + '.jpg';}
 				  else { 
@@ -434,80 +372,180 @@
 
 				  xzsq.src =  xzurl;
 
-				  context.drawImage(xzsq, 640, 220, 200, 200);
+				  context.drawImage(xzsq, 350, 0, 300, 300);
 
+				  drawnScribblesY[ySlice].scribbles.forEach(function(d){
+ 					 context.beginPath();
+			         context.arc(d.x + 350, d.y, 5, 0, 2 * Math.PI, false);
+			         context.fillStyle = 'yellow';
+			         context.fill();
+		     	  })
+
+		     	  context.fillStyle = 'white';
+     	  		  context.fillRect(xPos + 350, 0, 1, 300);
+     	  		  context.fillRect(350, zPos/60*300, 300, 1);
 		 	  }
+
+		 	  function changeXYPlane(xPos, yPos, zPos){
+		 	  	  var xyurl = "";
+		 	  	  var zSlice = Math.floor(yPos/300*60);
+				  if (zSlice < 10) { 
+				  	xyurl = 'slices/raw_000' + zSlice + '.jpg';}
+				  else { 
+					xyurl = 'slices/raw_00' + zSlice + '.jpg';}
+			      xysq = new Image();
+
+				  xysq.src =  xyurl;
+
+				  context.drawImage(xysq, 0, 0, 300, 300);
+		 	  }
+
+			function changeColors (){
+				var imgData = context.getImageData(0, 0, 300, 300);
+				var allcolors = [];
+
+		        for (var k=0;k<imgData.data.length;k+=4){
+		        	var rgb_str = "(" + imgData.data[k] + "," + imgData.data[k+1] + "," + imgData.data[k+2] + ")";
+					if (allcolors.indexOf(rgb_str) == -1){
+					  	allcolors.push(rgb_str)
+					}
+				}
+				allcolors.sort();
+									console.log(allcolors);
+
+				//console.log(allcolors); //FOR THE DEMO. Shows how many colors and which ones are in each pixel
+
+				for (var k=0;k<imgData.data.length;k+=4){
+						var m = 100;
+						//var c = d3.color();
+						//console.log(d3.color(color(imgData.data[k]/255)))
+						if (imgData.data[k] < (m+5)) {
+					  		imgData.data[k]= 255; //red
+					  		imgData.data[k+1]= 195; 
+					    	imgData.data[k+2]= 0; 
+					    } /*else if (imgData.data[k] > m && imgData.data[k] <= (m+5)) {
+					  		imgData.data[k]= 255; //red
+					  		imgData.data[k+1]= 87; 
+					    	imgData.data[k+2]= 51; 
+					    } else if (imgData.data[k] <= m && imgData.data[k] <= (m-5)){
+					    	imgData.data[k]= 199; //red
+					  		imgData.data[k+1]= 0; 
+					    	imgData.data[k+2]= 255;
+					    }	  */
+				}
+				context.putImageData(imgData, 0,0);	
+			}
+
 
 }
 /*
+
+			var container, stats;
 			var camera, scene, renderer;
-			var scene2, renderer2;
-			var controls;
-			//init();
-			//animate();
+			var particleMaterial;
+			var raycaster;
+			var mouse;
+			var objects = [];
+			init();
+			animate();
 
 			function init() {
-				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
-				camera.position.set( 200, 200, 200 );
-				controls = new THREE.TrackballControls( camera );
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+				var info = document.createElement( 'div' );
+				info.style.position = 'absolute';
+				info.style.top = '10px';
+				info.style.width = '100%';
+				info.style.textAlign = 'center';
+				info.innerHTML = '<a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> - clickable objects';
+				container.appendChild( info );
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
+				camera.position.set( 0, 300, 500 );
 				scene = new THREE.Scene();
-				scene2 = new THREE.Scene();
-				var material = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, wireframeLinewidth: 1, side: THREE.DoubleSide } );
-				//
+				var geometry = new THREE.BoxGeometry( 100, 100, 100 );
 				for ( var i = 0; i < 10; i ++ ) {
-					var element = document.createElement( 'div' );
-					element.style.width = '100px';
-					element.style.height = '100px';
-
-					var iframe = document.createElement( 'iframe' );
-						iframe.style.width = '100px';
-						iframe.style.height = '100px';
-						iframe.style.border = '0px';
-						iframe.src = [ 'slices/raw_0059.jpg'].join( '' );
-						element.appendChild( iframe );
-
-					element.style.opacity = ( i < 5 ) ? 0.5 : 1;
-					element.style.background = new THREE.Color( Math.random() * 0xffffff ).getStyle();
-					var object = new THREE.CSS3DObject( element );
-					//object.position.x = i * 20 - 100;
-					object.position.y = i * 10;
-					//object.position.z = i * 20  - 100;
-					object.rotation.x = 90;
-					/*object.rotation.y = Math.random();
-					object.rotation.z = Math.random();
-					object.scale.x = i/20 + 0.5;
-					object.scale.y = i/20 + 0.5;
-					scene2.add( object );
-					var geometry = new THREE.PlaneGeometry( 100, 100 );
-					var mesh = new THREE.Mesh( geometry, material );
-					mesh.position.copy( object.position );
-					mesh.rotation.copy( object.rotation );
-					mesh.scale.copy( object.scale );
-					scene.add( mesh );
+					var object = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff, opacity: 0.5 } ) );
+					object.position.x = Math.random() * 800 - 400;
+					object.position.y = Math.random() * 800 - 400;
+					object.position.z = Math.random() * 800 - 400;
+					object.scale.x = Math.random() * 2 + 1;
+					object.scale.y = Math.random() * 2 + 1;
+					object.scale.z = Math.random() * 2 + 1;
+					object.rotation.x = Math.random() * 2 * Math.PI;
+					object.rotation.y = Math.random() * 2 * Math.PI;
+					object.rotation.z = Math.random() * 2 * Math.PI;
+					scene.add( object );
+					objects.push( object );
 				}
+				var PI2 = Math.PI * 2;
+				particleMaterial = new THREE.SpriteCanvasMaterial( {
+					color: 0x000000,
+					program: function ( context ) {
+						context.beginPath();
+						context.arc( 0, 0, 0.5, 0, PI2, true );
+						context.fill();
+					}
+				} );
 				//
-				renderer = new THREE.WebGLRenderer();
+				raycaster = new THREE.Raycaster();
+				mouse = new THREE.Vector2();
+				renderer = new THREE.CanvasRenderer();
 				renderer.setClearColor( 0xf0f0f0 );
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
-				document.body.appendChild( renderer.domElement );
-				renderer2 = new THREE.CSS3DRenderer();
-				renderer2.setSize( window.innerWidth, window.innerHeight );
-				renderer2.domElement.style.position = 'absolute';
-				renderer2.domElement.style.top = 0;
-				document.body.appendChild( renderer2.domElement );
+				container.appendChild( renderer.domElement );
+				stats = new Stats();
+				container.appendChild( stats.dom );
+				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+				document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+				//
+				window.addEventListener( 'resize', onWindowResize, false );
+			}
+			
+
+			function onDocumentTouchStart( event ) {
+				event.preventDefault();
+				event.clientX = event.touches[0].clientX;
+				event.clientY = event.touches[0].clientY;
+				onDocumentMouseDown( event );
 			}
 
+			function onDocumentMouseDown( event ) {
+				event.preventDefault();
+				mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
+				mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
+				raycaster.setFromCamera( mouse, camera );
+				var intersects = raycaster.intersectObjects( objects );
+				if ( intersects.length > 0 ) {
+					intersects[ 0 ].object.material.color.setHex( Math.random() * 0xffffff );
+					var particle = new THREE.Sprite( particleMaterial );
+					particle.position.copy( intersects[ 0 ].point );
+					particle.scale.x = particle.scale.y = 16;
+					scene.add( particle );
+				}
+				
+				// Parse all the faces
+				for ( var i in intersects ) {
+					intersects[ i ].face.material[ 0 ].color.setHex( Math.random() * 0xffffff | 0x80000000 );
+				}
+				
+			}
+			//
 			function animate() {
 				requestAnimationFrame( animate );
-				controls.update();
-				renderer.render( scene, camera );
-				renderer2.render( scene2, camera );
+				render();
+				stats.update();
 			}
-
-*/
-
-			
+			var radius = 600;
+			var theta = 0;
+			function render() {
+				theta += 0.1;
+				camera.position.x = radius * Math.sin( THREE.Math.degToRad( theta ) );
+				camera.position.y = radius * Math.sin( THREE.Math.degToRad( theta ) );
+				camera.position.z = radius * Math.cos( THREE.Math.degToRad( theta ) );
+				camera.lookAt( scene.position );
+				renderer.render( scene, camera );
+			}*/
 
 		</script>
 	</body>
